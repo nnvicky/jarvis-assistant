@@ -1,0 +1,18 @@
+{
+  "name": "JARVIS Cross-Device Assistant",
+  "short_name": "JARVIS",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050b14",
+  "theme_color": "#050d18",
+  "description": "A JARVIS-inspired personal assistant for PC and mobile",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

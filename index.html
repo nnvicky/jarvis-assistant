@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050d18">
+<meta name="description" content="JARVIS cross-device personal assistant dashboard">
+<link rel="manifest" href="./manifest.json">
+<title>J.A.R.V.I.S. | Personal Assistant</title>
+<style>
+:root{--cyan:#68eaff;--blue:#238dff;--bg:#050b14;--panel:#0a1a2a;--muted:#8aa9bd;--line:#1d6385}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:#e9faff;background:radial-gradient(ellipse at 50% 15%,#123454 0,#081827 34%,#040912 78%);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{max-width:1240px;margin:auto;padding:20px clamp(14px,3vw,34px) 28px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #1d526c;padding:8px 0 15px}
+.brand{font-size:12px;letter-spacing:.2em;color:var(--cyan);font-weight:700}
+.status{font-size:11px;letter-spacing:.13em;color:#a5d6e8;display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:#5dffbd;box-shadow:0 0 10px #5dffbd}
+.hero{text-align:center;padding:22px 0 8px}
+h1{font-size:clamp(26px,4vw,42px);letter-spacing:.3em;margin:0;text-shadow:0 0 22px #168dff}
+.tag{font-size:10px;letter-spacing:.25em;color:#8db8ce;margin-top:8px}
+.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:18px;align-items:start;margin-top:18px}
+.left,.right{display:grid;gap:14px}
+.corearea{display:grid;place-items:center;min-height:330px;position:relative;overflow:hidden}
+.corearea:before{content:"";position:absolute;width:min(70vw,460px);aspect-ratio:1;border-radius:50%;border:1px dashed #2e9ec877;animation:spin 35s linear infinite}
+.corearea:after{content:"";position:absolute;width:min(58vw,380px);aspect-ratio:1;border-radius:50%;border:1px solid #2e9ec844;box-shadow:0 0 45px #168dff22}
+.core{width:min(42vw,230px);min-width:170px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;background:radial-gradient(circle,#1b5274 0,#0a2942 48%,#06101d 72%);border:2px solid var(--cyan);box-shadow:0 0 24px #168dff99,inset 0 0 30px #168dff66}
+.core:before,.core:after{content:"";position:absolute;inset:-12%;border-radius:50%;border:2px solid transparent;border-top-color:var(--cyan);border-bottom-color:var(--blue);animation:spin 7s linear infinite}
+.core:after{inset:-23%;border-width:1px;border-left-color:#168dff;border-right-color:#68eaff;animation-direction:reverse;animation-duration:13s}
+.core span{font-size:clamp(44px,7vw,68px);font-weight:300;color:var(--cyan);text-shadow:0 0 22px var(--cyan)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.listening .core{box-shadow:0 0 44px #68eaffbb,inset 0 0 42px #168dff99}
+.panel{background:linear-gradient(145deg,#0c2236ed,#06111feF);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 32px #0005}
+.ptitle{font-size:10px;letter-spacing:.19em;color:var(--cyan);font-weight:700;margin-bottom:11px}
+.response{font-size:15px;line-height:1.55;min-height:48px}
+.heard{font-size:11px;color:var(--muted);margin-top:7px;min-height:16px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:1px solid #28799b;border-radius:11px;background:#0b2b43;color:#eafaff;padding:12px 13px;font-weight:650;font-size:13px;cursor:pointer}
+button.primary{background:linear-gradient(120deg,#087db7,#164c8c);border-color:#68eaff;box-shadow:0 0 16px #168dff44}
+button:active{transform:scale(.985)}button:disabled{opacity:.5}
+form{display:flex;gap:8px}
+input{flex:1;min-width:0;border:1px solid #285c77;border-radius:10px;background:#04111e;color:white;padding:12px;font-size:14px}
+.quick{display:flex;flex-wrap:wrap;gap:8px}.quick button{font-size:11px;padding:9px 11px;font-weight:550}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.metric{background:#061827;border:1px solid #17415b;border-radius:10px;padding:10px;text-align:center}
+.metric b{display:block;color:var(--cyan);font-size:14px}.metric span{font-size:9px;color:#8caec1;letter-spacing:.1em}
+.note{font-size:11px;line-height:1.55;color:#91afc0}
+footer{text-align:center;color:#67879a;font-size:10px;letter-spacing:.13em;margin-top:20px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.corearea{min-height:290px}.app{padding-top:14px}.hero{padding-top:19px}.right{grid-row:2}}
+@media(min-width:761px){.corearea{min-height:420px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="brand">STARK INDUSTRIES // PERSONAL SYSTEM</div><div class="status"><i class="dot"></i><span id="status">SYSTEM READY</span></div></header>
+  <section class="hero"><h1>J.A.R.V.I.S.</h1><div class="tag">JUST A RATHER VERY INTELLIGENT SYSTEM</div></section>
+  <div class="layout">
+    <section class="left">
+      <div class="corearea" id="corearea"><div class="core"><span>J</span></div></div>
+      <div class="panel"><div class="ptitle">JARVIS RESPONSE</div><div class="response" id="reply">Good day. All systems are ready. Tap Start Listening or type a command.</div><div class="heard" id="heard">Awaiting your instruction.</div></div>
+      <div class="controls"><button class="primary" id="listen">🎙 START LISTENING</button><button id="stop">■ STOP</button></div>
+      <div class="panel"><div class="ptitle">COMMAND CONSOLE</div><form id="commandForm"><input id="command" placeholder="Enter a command..." autocomplete="off"><button class="primary" type="submit">SEND</button></form></div>
+    </section>
+    <section class="right">
+      <div class="panel"><div class="ptitle">SYSTEM OVERVIEW</div><div class="metrics"><div class="metric"><b id="clock">--:--</b><span>LOCAL TIME</span></div><div class="metric"><b>ONLINE</b><span>INTERFACE</span></div><div class="metric"><b>READY</b><span>COMMANDS</span></div></div></div>
+      <div class="panel"><div class="ptitle">QUICK COMMANDS</div><div class="quick">
+        <button data-cmd="What time is it">TIME</button><button data-cmd="Open YouTube">YOUTUBE</button><button data-cmd="Open Google Maps">MAPS</button><button data-cmd="Open ChatGPT">CHATGPT</button><button data-cmd="Search for latest space news">SPACE NEWS</button><button data-cmd="Who are you">IDENTIFY</button>
+      </div></div>
+      <div class="panel"><div class="ptitle">CAPABILITIES & PRIVACY</div><div class="note">This free starter app supports a JARVIS-style dashboard, tap-to-speak English commands, spoken replies, simple shortcuts and web searches. It does not include an unlimited AI model or unrestricted PC/Android control. Speech recognition depends on Chrome/Edge support, microphone permission and network availability. The microphone is activated only after you press Start Listening.</div></div>
+      <div class="panel"><div class="ptitle">DEVICE STATUS</div><div class="note" id="device">Detecting browser...</div></div>
+    </section>
+  </div>
+  <footer>J.A.R.V.I.S. // CROSS-DEVICE EDITION // BUILD 2.0</footer>
+</div>
+<script>
+const el=id=>document.getElementById(id);let recognition=null,listening=false;
+function speak(t){el('reply').textContent=t;if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=1;u.pitch=.92;speechSynthesis.speak(u)}}
+function web(q){window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank','noopener')}
+function command(raw){let q=raw.trim(),s=q.toLowerCase();if(!q)return;el('heard').textContent='YOU: '+q;
+ if(/\b(time|current time)\b/.test(s)){speak('The time is '+new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date())+'.');return}
+ if(s.includes('open youtube')){speak('Opening YouTube.');window.open('https://www.youtube.com','_blank','noopener');return}
+ if(s.includes('open google maps')||s==='open maps'){speak('Opening Google Maps.');window.open('https://maps.google.com','_blank','noopener');return}
+ if(s.includes('open chatgpt')){speak('Opening ChatGPT.');window.open('https://chatgpt.com','_blank','noopener');return}
+ if(s.includes('who are you')){speak('I am JARVIS, your cross-device personal assistant prototype.');return}
+ if(s.includes('hello')||s.includes('hey jarvis')){speak('Hello. How may I assist you?');return}
+ if(s.startsWith('search for ')){let term=q.slice(11);speak('Searching the web for '+term+'.');web(term);return}
+ if(s.startsWith('search ')){let term=q.slice(7);speak('Searching the web for '+term+'.');web(term);return}
+ speak('I can handle basic commands. I will search the web for '+q+'.');web(q)
+}
+const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(Speech){recognition=new Speech();recognition.lang='en-US';recognition.interimResults=false;recognition.continuous=false;recognition.onstart=()=>{listening=true;el('status').textContent='LISTENING';el('corearea').classList.add('listening')};recognition.onend=()=>{listening=false;el('status').textContent='SYSTEM READY';el('corearea').classList.remove('listening')};recognition.onerror=e=>speak('Voice input issue: '+e.error+'. You can type your command instead.');recognition.onresult=e=>command(e.results[0][0].transcript)}
+else{el('listen').disabled=true;el('listen').textContent='VOICE INPUT NOT SUPPORTED'}
+el('listen').onclick=()=>{if(!recognition){speak('Voice input is unavailable in this browser. Please type your command.');return}try{recognition.start()}catch(e){speak('Voice input is already starting.')}}
+el('stop').onclick=()=>{if(recognition&&listening)recognition.stop();if('speechSynthesis'in window)speechSynthesis.cancel();el('status').textContent='SYSTEM READY'}
+el('commandForm').onsubmit=e=>{e.preventDefault();command(el('command').value);el('command').value=''}
+document.querySelectorAll('[data-cmd]').forEach(b=>b.onclick=()=>command(b.dataset.cmd));
+function tick(){el('clock').textContent=new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit'}).format(new Date())}tick();setInterval(tick,10000);
+el('device').textContent=(/Android/i.test(navigator.userAgent)?'Android device':/Windows/i.test(navigator.userAgent)?'Windows PC':'Browser device')+' detected • '+(Speech?'Speech recognition supported by this browser':'Speech recognition unavailable')+' • '+(navigator.onLine?'Network connected':'Offline');
+if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
