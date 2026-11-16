@@ -73,6 +73,227 @@ footer{text-align:center;color:#67879a;font-size:10px;letter-spacing:.13em;margi
   <footer>J.A.R.V.I.S. // CROSS-DEVICE EDITION // BUILD 2.0</footer>
 </div>
 <script>
+const el = id => document.getElementById(id);
+
+let recognition = null;
+let listening = false;
+
+function speak(message) {
+  el('reply').textContent = message;
+
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+
+    const voice = new SpeechSynthesisUtterance(message);
+    voice.lang = 'en-US';
+    voice.rate = 1;
+    voice.pitch = 0.92;
+
+    speechSynthesis.speak(voice);
+  }
+}
+
+function openPage(url, message) {
+  speak(message);
+  window.location.href = url;
+}
+
+function command(raw) {
+  const q = raw.trim();
+  const s = q.toLowerCase();
+
+  if (!q) return;
+
+  el('heard').textContent = 'YOU: ' + q;
+
+  // Time
+  if (s.includes('time')) {
+    speak('The time is ' +
+      new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(new Date()));
+    return;
+  }
+
+  // YouTube
+  if (s.includes('open youtube')) {
+    openPage('https://www.youtube.com/',
+      'Opening YouTube.');
+    return;
+  }
+
+  if (s.startsWith('search youtube for ')) {
+    const term = q.slice(18);
+    openPage(
+      'https://www.youtube.com/results?search_query=' +
+      encodeURIComponent(term),
+      'Searching YouTube for ' + term
+    );
+    return;
+  }
+
+  if (s.startsWith('play ') && s.includes(' on youtube')) {
+    const term = q.slice(5, s.lastIndexOf(' on youtube'));
+    openPage(
+      'https://www.youtube.com/results?search_query=' +
+      encodeURIComponent(term),
+      'Searching YouTube for ' + term
+    );
+    return;
+  }
+
+  // Google
+  if (s.includes('open google')) {
+    openPage('https://www.google.com/', 'Opening Google.');
+    return;
+  }
+
+  if (s.startsWith('search for ') || s.startsWith('search ')) {
+    const term = s.startsWith('search for ')
+      ? q.slice(11) : q.slice(7);
+
+    openPage(
+      'https://www.google.com/search?q=' +
+      encodeURIComponent(term),
+      'Searching for ' + term
+    );
+    return;
+  }
+
+  // Other applications and services
+  const apps = {
+    'open maps': ['https://maps.google.com/', 'Opening Maps.'],
+    'open google maps': ['https://maps.google.com/', 'Opening Maps.'],
+    'open chatgpt': ['https://chatgpt.com/', 'Opening ChatGPT.'],
+    'open gmail': ['https://mail.google.com/', 'Opening Gmail.'],
+    'open calendar': ['https://calendar.google.com/', 'Opening Calendar.'],
+    'open spotify': ['https://open.spotify.com/', 'Opening Spotify.'],
+    'open google drive': ['https://drive.google.com/', 'Opening Google Drive.'],
+    'open wikipedia': ['https://www.wikipedia.org/', 'Opening Wikipedia.']
+  };
+
+  if (apps[s]) {
+    openPage(apps[s][0], apps[s][1]);
+    return;
+  }
+
+  // Navigation
+  if (s === 'go back' || s === 'back') {
+    speak('Going back.');
+    history.back();
+    return;
+  }
+
+  if (s === 'stop speaking') {
+    speechSynthesis.cancel();
+    return;
+  }
+
+  if (s.includes('who are you')) {
+    speak('I am JARVIS, your personal voice assistant.');
+    return;
+  }
+
+  if (s.includes('hello') || s.includes('hey jarvis')) {
+    speak('Hello. How may I assist you?');
+    return;
+  }
+
+  speak('I do not know that command yet. I can search the web for you.');
+  openPage(
+    'https://www.google.com/search?q=' + encodeURIComponent(q),
+    'Searching the web.'
+  );
+}
+
+// Voice recognition
+const Speech =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+if (Speech) {
+  recognition = new Speech();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  recognition.onstart = () => {
+    listening = true;
+    el('status').textContent = 'LISTENING';
+    el('corearea').classList.add('listening');
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    el('status').textContent = 'SYSTEM READY';
+    el('corearea').classList.remove('listening');
+  };
+
+  recognition.onerror = e => {
+    speak('Voice input problem: ' + e.error);
+  };
+
+  recognition.onresult = e => {
+    command(e.results[0][0].transcript);
+  };
+}
+
+el('listen').onclick = () => {
+  if (!recognition) {
+    speak('Voice recognition is unavailable in this browser.');
+    return;
+  }
+
+  try {
+    recognition.start();
+  } catch (e) {
+    speak('Please wait and try again.');
+  }
+};
+
+el('stop').onclick = () => {
+  if (recognition && listening) recognition.stop();
+  speechSynthesis.cancel();
+  el('status').textContent = 'SYSTEM READY';
+};
+
+el('commandForm').onsubmit = e => {
+  e.preventDefault();
+  command(el('command').value);
+  el('command').value = '';
+};
+
+document.querySelectorAll('[data-cmd]').forEach(button => {
+  button.onclick = () => command(button.dataset.cmd);
+});
+
+function tick() {
+  el('clock').textContent =
+    new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date());
+}
+
+tick();
+setInterval(tick, 10000);
+
+el('device').textContent =
+  (/Android/i.test(navigator.userAgent)
+    ? 'Android device'
+    : /Windows/i.test(navigator.userAgent)
+      ? 'Windows PC'
+      : 'Browser device') +
+  ' detected • ' +
+  (Speech ? 'Voice supported' : 'Voice unavailable') +
+  ' • ' +
+  (navigator.onLine ? 'Online' : 'Offline');
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
 const el=id=>document.getElementById(id);let recognition=null,listening=false;
 function speak(t){el('reply').textContent=t;if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=1;u.pitch=.92;speechSynthesis.speak(u)}}
 function web(q){window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank','noopener')}
