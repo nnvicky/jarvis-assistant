@@ -87,7 +87,39 @@ function command(raw){let q=raw.trim(),s=q.toLowerCase();if(!q)return;el('heard'
  if(s.startsWith('search ')){let term=q.slice(7);speak('Searching the web for '+term+'.');web(term);return}
  speak('I can handle basic commands. I will search the web for '+q+'.');web(q)
 }
-const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (Speech) {
+  recognition = new Speech();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  recognition.onstart = () => {
+    listening = true;
+    el('status').textContent = 'LISTENING';
+    el('corearea').classList.add('listening');
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    el('status').textContent = 'SYSTEM READY';
+    el('corearea').classList.remove('listening');
+  };
+
+  recognition.onerror = (e) => {
+    speak('Voice input issue: ' + e.error + '. Please try again.');
+  };
+
+  recognition.onresult = (e) => {
+    command(e.results[0][0].transcript);
+  };
+} else {
+  el('listen').disabled = true;
+  el('listen').textContent = 'VOICE INPUT NOT SUPPORTED';
+}
+
 if(Speech){recognition=new Speech();recognition.lang='en-US';recognition.interimResults=false;recognition.continuous=false;recognition.onstart=()=>{listening=true;el('status').textContent='LISTENING';el('corearea').classList.add('listening')};recognition.onend=()=>{listening=false;el('status').textContent='SYSTEM READY';el('corearea').classList.remove('listening')};recognition.onerror=e=>speak('Voice input issue: '+e.error+'. You can type your command instead.');recognition.onresult=e=>command(e.results[0][0].transcript)}
 else{el('listen').disabled=true;el('listen').textContent='VOICE INPUT NOT SUPPORTED'}
 el('listen').onclick=()=>{if(!recognition){speak('Voice input is unavailable in this browser. Please type your command.');return}try{recognition.start()}catch(e){speak('Voice input is already starting.')}}
