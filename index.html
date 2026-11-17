@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -30,7 +31,7 @@ h1{font-size:clamp(26px,4vw,42px);letter-spacing:.3em;margin:0;text-shadow:0 0 2
 .core span{font-size:clamp(44px,7vw,68px);font-weight:300;color:var(--cyan);text-shadow:0 0 22px var(--cyan)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .listening .core{box-shadow:0 0 44px #68eaffbb,inset 0 0 42px #168dff99}
-.panel{background:linear-gradient(145deg,#0c2236ed,#06111feF);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 32px #0005}
+.panel{background:linear-gradient(145deg,#0c2236ed,#06111fef);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 32px #0005}
 .ptitle{font-size:10px;letter-spacing:.19em;color:var(--cyan);font-weight:700;margin-bottom:11px}
 .response{font-size:15px;line-height:1.55;min-height:48px}
 .heard{font-size:11px;color:var(--muted);margin-top:7px;min-height:16px}
@@ -38,13 +39,16 @@ h1{font-size:clamp(26px,4vw,42px);letter-spacing:.3em;margin:0;text-shadow:0 0 2
 button{border:1px solid #28799b;border-radius:11px;background:#0b2b43;color:#eafaff;padding:12px 13px;font-weight:650;font-size:13px;cursor:pointer}
 button.primary{background:linear-gradient(120deg,#087db7,#164c8c);border-color:#68eaff;box-shadow:0 0 16px #168dff44}
 button:active{transform:scale(.985)}button:disabled{opacity:.5}
-form{display:flex;gap:8px}
+form{display:flex;gap:8px;flex-wrap:wrap}
 input{flex:1;min-width:0;border:1px solid #285c77;border-radius:10px;background:#04111e;color:white;padding:12px;font-size:14px}
 .quick{display:flex;flex-wrap:wrap;gap:8px}.quick button{font-size:11px;padding:9px 11px;font-weight:550}
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .metric{background:#061827;border:1px solid #17415b;border-radius:10px;padding:10px;text-align:center}
 .metric b{display:block;color:var(--cyan);font-size:14px}.metric span{font-size:9px;color:#8caec1;letter-spacing:.1em}
 .note{font-size:11px;line-height:1.55;color:#91afc0}
+.contact-list{display:grid;gap:7px;margin-top:12px}
+.contact-item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#061827;border:1px solid #17415b;border-radius:9px;padding:8px 10px;font-size:12px}
+.contact-item button{padding:6px 9px;font-size:10px}
 footer{text-align:center;color:#67879a;font-size:10px;letter-spacing:.13em;margin-top:20px}
 @media(max-width:760px){.layout{grid-template-columns:1fr}.corearea{min-height:290px}.app{padding-top:14px}.hero{padding-top:19px}.right{grid-row:2}}
 @media(min-width:761px){.corearea{min-height:420px}}
@@ -57,111 +61,166 @@ footer{text-align:center;color:#67879a;font-size:10px;letter-spacing:.13em;margi
   <div class="layout">
     <section class="left">
       <div class="corearea" id="corearea"><div class="core"><span>J</span></div></div>
-      <div class="panel"><div class="ptitle">JARVIS RESPONSE</div><div class="response" id="reply">Good day. All systems are ready. Tap Start Listening or type a command.</div><div class="heard" id="heard">Awaiting your instruction.</div></div>
+      <div class="panel"><div class="ptitle">JARVIS RESPONSE</div><div class="response" id="reply">Good day. All systems are ready. Tap Start Listening once, then say “Hey JARVIS”.</div><div class="heard" id="heard">Awaiting your instruction.</div></div>
       <div class="controls"><button class="primary" id="listen">🎙 START LISTENING</button><button id="stop">■ STOP</button></div>
       <div class="panel"><div class="ptitle">COMMAND CONSOLE</div><form id="commandForm"><input id="command" placeholder="Enter a command..." autocomplete="off"><button class="primary" type="submit">SEND</button></form></div>
+      <div class="panel">
+        <div class="ptitle">VOICE CONTACTS</div>
+        <div class="note">Add a contact name and phone number once. Then say “Hey JARVIS, call Dad”. Contacts are saved only in this browser on this device.</div>
+        <form id="contactForm" style="margin-top:10px">
+          <input id="contactName" placeholder="Contact name (e.g. Dad)" autocomplete="off" required>
+          <input id="contactNumber" placeholder="Phone number (e.g. +91...)" type="tel" autocomplete="tel" required>
+          <button class="primary" type="submit">SAVE CONTACT</button>
+        </form>
+        <div class="contact-list" id="contactList"></div>
+      </div>
     </section>
     <section class="right">
       <div class="panel"><div class="ptitle">SYSTEM OVERVIEW</div><div class="metrics"><div class="metric"><b id="clock">--:--</b><span>LOCAL TIME</span></div><div class="metric"><b>ONLINE</b><span>INTERFACE</span></div><div class="metric"><b>READY</b><span>COMMANDS</span></div></div></div>
       <div class="panel"><div class="ptitle">QUICK COMMANDS</div><div class="quick">
         <button data-cmd="What time is it">TIME</button><button data-cmd="Open YouTube">YOUTUBE</button><button data-cmd="Open Google Maps">MAPS</button><button data-cmd="Open ChatGPT">CHATGPT</button><button data-cmd="Search for latest space news">SPACE NEWS</button><button data-cmd="Who are you">IDENTIFY</button>
       </div></div>
-      <div class="panel"><div class="ptitle">CAPABILITIES & PRIVACY</div><div class="note">This free starter app supports a JARVIS-style dashboard, tap-to-speak English commands, spoken replies, simple shortcuts and web searches. It does not include an unlimited AI model or unrestricted PC/Android control. Speech recognition depends on Chrome/Edge support, microphone permission and network availability. The microphone is activated only after you press Start Listening.</div></div>
+      <div class="panel"><div class="ptitle">CAPABILITIES & PRIVACY</div><div class="note">This free starter app supports a JARVIS-style dashboard, English voice commands, spoken replies, shortcuts and web searches. Voice recognition depends on browser support, microphone permission and network availability. Contacts are stored locally in this browser. The microphone works while this page is open and listening; browsers do not allow a webpage to keep listening after it is closed.</div></div>
       <div class="panel"><div class="ptitle">DEVICE STATUS</div><div class="note" id="device">Detecting browser...</div></div>
     </section>
   </div>
-  <footer>J.A.R.V.I.S. // CROSS-DEVICE EDITION // BUILD 2.0</footer>
+  <footer>J.A.R.V.I.S. // CROSS-DEVICE EDITION // BUILD 2.1</footer>
 </div>
 <script>
 const el = id => document.getElementById(id);
-
 let recognition = null;
 let listening = false;
+let shouldKeepListening = false;
+let restartTimer = null;
+let lastCallAt = 0;
 
 function speak(message) {
   el('reply').textContent = message;
-
   if ('speechSynthesis' in window) {
     speechSynthesis.cancel();
-
     const voice = new SpeechSynthesisUtterance(message);
     voice.lang = 'en-US';
     voice.rate = 1;
     voice.pitch = 0.92;
-
     speechSynthesis.speak(voice);
   }
 }
 
 function openPage(url, message) {
   speak(message);
-  window.location.href = url;
+  window.open(url, '_blank', 'noopener');
+}
+
+function getContacts() {
+  try { return JSON.parse(localStorage.getItem('jarvisContacts') || '[]'); }
+  catch (_) { return []; }
+}
+function saveContacts(contacts) {
+  localStorage.setItem('jarvisContacts', JSON.stringify(contacts));
+  renderContacts();
+}
+function renderContacts() {
+  const list = el('contactList');
+  const contacts = getContacts();
+  list.replaceChildren();
+  if (!contacts.length) {
+    const empty = document.createElement('div');
+    empty.className = 'note';
+    empty.textContent = 'No contacts saved yet.';
+    list.appendChild(empty);
+    return;
+  }
+  contacts.forEach((contact, index) => {
+    const row = document.createElement('div');
+    row.className = 'contact-item';
+    const label = document.createElement('span');
+    label.textContent = contact.name + ' • ' + contact.number;
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'DELETE';
+    remove.setAttribute('aria-label', 'Delete ' + contact.name);
+    remove.onclick = () => {
+      const updated = getContacts();
+      updated.splice(index, 1);
+      saveContacts(updated);
+      speak(contact.name + ' removed from contacts.');
+    };
+    row.append(label, remove);
+    list.appendChild(row);
+  });
+}
+el('contactForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const name = el('contactName').value.trim();
+  const number = el('contactNumber').value.trim();
+  if (!name || !number) return;
+  if (!/^\+?[0-9][0-9\s()-]{5,20}$/.test(number)) {
+    speak('Please enter a valid phone number, including country code if needed.');
+    return;
+  }
+  const contacts = getContacts();
+  const existing = contacts.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
+  const entry = { name, number: number.replace(/[^\d+]/g, '') };
+  if (existing >= 0) contacts[existing] = entry;
+  else contacts.push(entry);
+  saveContacts(contacts);
+  el('contactName').value = '';
+  el('contactNumber').value = '';
+  speak(name + ' saved to JARVIS contacts.');
+});
+renderContacts();
+
+function callContact(name) {
+  const contacts = getContacts();
+  const normalized = name.toLowerCase().trim();
+  const contact = contacts.find(c => c.name.toLowerCase() === normalized) ||
+    contacts.find(c => c.name.toLowerCase().includes(normalized) || normalized.includes(c.name.toLowerCase()));
+  if (!contact) {
+    speak('I could not find ' + name + ' in JARVIS contacts. Add this contact first.');
+    return;
+  }
+  if (Date.now() - lastCallAt < 5000) return;
+  lastCallAt = Date.now();
+  el('reply').textContent = 'Calling ' + contact.name + '...';
+  el('heard').textContent = 'CALL: ' + contact.name;
+  // A tel link asks the device to open its phone app. The browser/device may still show its own call UI.
+  window.location.href = 'tel:' + contact.number;
 }
 
 function command(raw) {
   const q = raw.trim();
-  const s = q.toLowerCase();
-
+  const s = q.toLowerCase().replace(/[.!?]+$/g, '');
   if (!q) return;
-
   el('heard').textContent = 'YOU: ' + q;
 
-  // Time
-  if (s.includes('time')) {
-    speak('The time is ' +
-      new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric',
-        minute: '2-digit'
-      }).format(new Date()));
+  // Direct voice calling: "Hey JARVIS, call Dad" or "call Dad" while listening.
+  const callMatch = s.match(/^(?:(?:hey\s+)?jarvis[\s,]+)?(?:please\s+)?call\s+(.+)$/i);
+  if (callMatch && callMatch[1]) {
+    callContact(callMatch[1].trim());
     return;
   }
 
-  // YouTube
-  if (s.includes('open youtube')) {
-    openPage('https://www.youtube.com/',
-      'Opening YouTube.');
+  if (/\b(time|current time)\b/.test(s)) {
+    speak('The time is ' + new Intl.DateTimeFormat('en-US', {hour:'numeric', minute:'2-digit'}).format(new Date()) + '.');
     return;
   }
-
+  if (s.includes('open youtube')) { openPage('https://www.youtube.com/', 'Opening YouTube.'); return; }
   if (s.startsWith('search youtube for ')) {
     const term = q.slice(18);
-    openPage(
-      'https://www.youtube.com/results?search_query=' +
-      encodeURIComponent(term),
-      'Searching YouTube for ' + term
-    );
+    openPage('https://www.youtube.com/results?search_query=' + encodeURIComponent(term), 'Searching YouTube for ' + term);
     return;
   }
-
   if (s.startsWith('play ') && s.includes(' on youtube')) {
     const term = q.slice(5, s.lastIndexOf(' on youtube'));
-    openPage(
-      'https://www.youtube.com/results?search_query=' +
-      encodeURIComponent(term),
-      'Searching YouTube for ' + term
-    );
+    openPage('https://www.youtube.com/results?search_query=' + encodeURIComponent(term), 'Searching YouTube for ' + term);
     return;
   }
-
-  // Google
-  if (s.includes('open google')) {
-    openPage('https://www.google.com/', 'Opening Google.');
-    return;
-  }
-
+  if (s.includes('open google')) { openPage('https://www.google.com/', 'Opening Google.'); return; }
   if (s.startsWith('search for ') || s.startsWith('search ')) {
-    const term = s.startsWith('search for ')
-      ? q.slice(11) : q.slice(7);
-
-    openPage(
-      'https://www.google.com/search?q=' +
-      encodeURIComponent(term),
-      'Searching for ' + term
-    );
+    const term = s.startsWith('search for ') ? q.slice(11) : q.slice(7);
+    openPage('https://www.google.com/search?q=' + encodeURIComponent(term), 'Searching for ' + term);
     return;
   }
-
-  // Other applications and services
   const apps = {
     'open maps': ['https://maps.google.com/', 'Opening Maps.'],
     'open google maps': ['https://maps.google.com/', 'Opening Maps.'],
@@ -172,183 +231,89 @@ function command(raw) {
     'open google drive': ['https://drive.google.com/', 'Opening Google Drive.'],
     'open wikipedia': ['https://www.wikipedia.org/', 'Opening Wikipedia.']
   };
-
-  if (apps[s]) {
-    openPage(apps[s][0], apps[s][1]);
-    return;
-  }
-
-  // Navigation
-  if (s === 'go back' || s === 'back') {
-    speak('Going back.');
-    history.back();
-    return;
-  }
-
-  if (s === 'stop speaking') {
-    speechSynthesis.cancel();
-    return;
-  }
-
-  if (s.includes('who are you')) {
-    speak('I am JARVIS, your personal voice assistant.');
-    return;
-  }
-
-  if (s.includes('hello') || s.includes('hey jarvis')) {
-    speak('Hello. How may I assist you?');
-    return;
-  }
-
+  if (apps[s]) { openPage(apps[s][0], apps[s][1]); return; }
+  if (s === 'go back' || s === 'back') { speak('Going back.'); history.back(); return; }
+  if (s === 'stop speaking') { speechSynthesis.cancel(); return; }
+  if (s.includes('who are you')) { speak('I am JARVIS, your personal voice assistant.'); return; }
+  if (s.includes('hello') || s.includes('hey jarvis') || s === 'jarvis') { speak('Hello. How may I assist you?'); return; }
   speak('I do not know that command yet. I can search the web for you.');
-  openPage(
-    'https://www.google.com/search?q=' + encodeURIComponent(q),
-    'Searching the web.'
-  );
-}
-
-// Voice recognition
-const Speech =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
-
-if (Speech) {
-  recognition = new Speech();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.continuous = false;
-
-  recognition.onstart = () => {
-    listening = true;
-    el('status').textContent = 'LISTENING';
-    el('corearea').classList.add('listening');
-  };
-
-  recognition.onend = () => {
-    listening = false;
-    el('status').textContent = 'SYSTEM READY';
-    el('corearea').classList.remove('listening');
-  };
-
-  recognition.onerror = e => {
-    speak('Voice input problem: ' + e.error);
-  };
-
-  recognition.onresult = e => {
-    command(e.results[0][0].transcript);
-  };
-}
-
-el('listen').onclick = () => {
-  if (!recognition) {
-    speak('Voice recognition is unavailable in this browser.');
-    return;
-  }
-
-  try {
-    recognition.start();
-  } catch (e) {
-    speak('Please wait and try again.');
-  }
-};
-
-el('stop').onclick = () => {
-  if (recognition && listening) recognition.stop();
-  speechSynthesis.cancel();
-  el('status').textContent = 'SYSTEM READY';
-};
-
-el('commandForm').onsubmit = e => {
-  e.preventDefault();
-  command(el('command').value);
-  el('command').value = '';
-};
-
-document.querySelectorAll('[data-cmd]').forEach(button => {
-  button.onclick = () => command(button.dataset.cmd);
-});
-
-function tick() {
-  el('clock').textContent =
-    new Intl.DateTimeFormat('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date());
-}
-
-tick();
-setInterval(tick, 10000);
-
-el('device').textContent =
-  (/Android/i.test(navigator.userAgent)
-    ? 'Android device'
-    : /Windows/i.test(navigator.userAgent)
-      ? 'Windows PC'
-      : 'Browser device') +
-  ' detected • ' +
-  (Speech ? 'Voice supported' : 'Voice unavailable') +
-  ' • ' +
-  (navigator.onLine ? 'Online' : 'Offline');
-
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
-
-const el=id=>document.getElementById(id);let recognition=null,listening=false;
-function speak(t){el('reply').textContent=t;if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=1;u.pitch=.92;speechSynthesis.speak(u)}}
-function web(q){window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank','noopener')}
-function command(raw){let q=raw.trim(),s=q.toLowerCase();if(!q)return;el('heard').textContent='YOU: '+q;
- if(/\b(time|current time)\b/.test(s)){speak('The time is '+new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date())+'.');return}
- if(s.includes('open youtube')){speak('Opening YouTube.');window.open('https://www.youtube.com','_blank','noopener');return}
- if(s.includes('open google maps')||s==='open maps'){speak('Opening Google Maps.');window.open('https://maps.google.com','_blank','noopener');return}
- if(s.includes('open chatgpt')){speak('Opening ChatGPT.');window.open('https://chatgpt.com','_blank','noopener');return}
- if(s.includes('who are you')){speak('I am JARVIS, your cross-device personal assistant prototype.');return}
- if(s.includes('hello')||s.includes('hey jarvis')){speak('Hello. How may I assist you?');return}
- if(s.startsWith('search for ')){let term=q.slice(11);speak('Searching the web for '+term+'.');web(term);return}
- if(s.startsWith('search ')){let term=q.slice(7);speak('Searching the web for '+term+'.');web(term);return}
- speak('I can handle basic commands. I will search the web for '+q+'.');web(q)
+  window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener');
 }
 
 const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-
+function startRecognition() {
+  if (!recognition || !shouldKeepListening || listening) return;
+  try { recognition.start(); } catch (_) {}
+}
 if (Speech) {
   recognition = new Speech();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
-  recognition.continuous = false;
-
+  recognition.continuous = true;
   recognition.onstart = () => {
     listening = true;
-    el('status').textContent = 'LISTENING';
+    el('status').textContent = 'LISTENING FOR JARVIS';
     el('corearea').classList.add('listening');
   };
-
   recognition.onend = () => {
     listening = false;
-    el('status').textContent = 'SYSTEM READY';
+    el('status').textContent = shouldKeepListening ? 'RECONNECTING MIC' : 'SYSTEM READY';
     el('corearea').classList.remove('listening');
+    if (shouldKeepListening) {
+      clearTimeout(restartTimer);
+      restartTimer = setTimeout(startRecognition, 700);
+    }
   };
-
-  recognition.onerror = (e) => {
-    speak('Voice input issue: ' + e.error + '. Please try again.');
+  recognition.onerror = event => {
+    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      shouldKeepListening = false;
+      speak('Microphone permission was denied. Allow microphone access and press Start Listening again.');
+    } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
+      el('heard').textContent = 'VOICE INPUT: ' + event.error;
+    }
   };
-
-  recognition.onresult = (e) => {
-    command(e.results[0][0].transcript);
+  recognition.onresult = event => {
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) command(event.results[i][0].transcript);
+    }
   };
 } else {
   el('listen').disabled = true;
   el('listen').textContent = 'VOICE INPUT NOT SUPPORTED';
 }
-
-if(Speech){recognition=new Speech();recognition.lang='en-US';recognition.interimResults=false;recognition.continuous=false;recognition.onstart=()=>{listening=true;el('status').textContent='LISTENING';el('corearea').classList.add('listening')};recognition.onend=()=>{listening=false;el('status').textContent='SYSTEM READY';el('corearea').classList.remove('listening')};recognition.onerror=e=>speak('Voice input issue: '+e.error+'. You can type your command instead.');recognition.onresult=e=>command(e.results[0][0].transcript)}
-else{el('listen').disabled=true;el('listen').textContent='VOICE INPUT NOT SUPPORTED'}
-el('listen').onclick=()=>{if(!recognition){speak('Voice input is unavailable in this browser. Please type your command.');return}try{recognition.start()}catch(e){speak('Voice input is already starting.')}}
-el('stop').onclick=()=>{if(recognition&&listening)recognition.stop();if('speechSynthesis'in window)speechSynthesis.cancel();el('status').textContent='SYSTEM READY'}
-el('commandForm').onsubmit=e=>{e.preventDefault();command(el('command').value);el('command').value=''}
-document.querySelectorAll('[data-cmd]').forEach(b=>b.onclick=()=>command(b.dataset.cmd));
-function tick(){el('clock').textContent=new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit'}).format(new Date())}tick();setInterval(tick,10000);
-el('device').textContent=(/Android/i.test(navigator.userAgent)?'Android device':/Windows/i.test(navigator.userAgent)?'Windows PC':'Browser device')+' detected • '+(Speech?'Speech recognition supported by this browser':'Speech recognition unavailable')+' • '+(navigator.onLine?'Network connected':'Offline');
-if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+el('listen').onclick = () => {
+  if (!recognition) { speak('Voice recognition is unavailable in this browser.'); return; }
+  shouldKeepListening = true;
+  startRecognition();
+  speak('Listening is on. Say, Hey JARVIS, call Dad.');
+};
+el('stop').onclick = () => {
+  shouldKeepListening = false;
+  clearTimeout(restartTimer);
+  if (recognition && listening) recognition.stop();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  el('status').textContent = 'SYSTEM READY';
+};
+el('commandForm').onsubmit = event => {
+  event.preventDefault();
+  command(el('command').value);
+  el('command').value = '';
+};
+document.querySelectorAll('[data-cmd]').forEach(button => {
+  button.onclick = () => command(button.dataset.cmd);
+});
+function tick() {
+  el('clock').textContent = new Intl.DateTimeFormat('en-US', {hour:'2-digit', minute:'2-digit'}).format(new Date());
+}
+tick();
+setInterval(tick, 10000);
+el('device').textContent =
+  (/Android/i.test(navigator.userAgent) ? 'Android device' : /Windows/i.test(navigator.userAgent) ? 'Windows PC' : 'Browser device') +
+  ' detected • ' + (Speech ? 'Voice supported' : 'Voice unavailable') + ' • ' +
+  (navigator.onLine ? 'Online' : 'Offline');
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
 </script>
-</body></html>
+</body>
+</html>
